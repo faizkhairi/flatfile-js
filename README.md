@@ -3,7 +3,7 @@
 Schema-first parser and generator for pipe, comma, and tab-delimited flat files — with type coercion, validation, and streaming support.
 
 [![CI](https://github.com/faizkhairi/flatfile-js/actions/workflows/ci.yml/badge.svg)](https://github.com/faizkhairi/flatfile-js/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/flatfile-js)](https://www.npmjs.com/package/flatfile-js)
+[![npm](https://img.shields.io/npm/v/@faizkhairi/flatfile-js)](https://www.npmjs.com/package/@faizkhairi/flatfile-js)
 
 ---
 
@@ -22,7 +22,7 @@ Enterprise data exchange often uses pipe-delimited flat files (SAP IDocs, bank s
 ## Install
 
 ```bash
-npm install flatfile-js
+npm install @faizkhairi/flatfile-js
 ```
 
 Zero dependencies. Works in Node.js 18+ and modern browsers.
@@ -32,7 +32,7 @@ Zero dependencies. Works in Node.js 18+ and modern browsers.
 ## Quick Start
 
 ```typescript
-import { createSchema, parseFlat, stringifyFlat } from 'flatfile-js'
+import { createSchema, parseFlat, stringifyFlat } from '@faizkhairi/flatfile-js'
 
 // 1. Define your schema once
 const schema = createSchema({
@@ -83,7 +83,7 @@ For files too large to load into memory, use `parseStream`. It yields one typed 
 ```typescript
 import { createReadStream } from 'node:fs'
 import { Readable } from 'node:stream'
-import { parseStream } from 'flatfile-js'
+import { parseStream } from '@faizkhairi/flatfile-js'
 
 // Convert Node.js stream to Web ReadableStream
 const nodeStream = createReadStream('large-file.dat')
