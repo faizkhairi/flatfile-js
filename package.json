@@ -1,6 +1,6 @@
 {
   "name": "@faizkhairi/flatfile-js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Schema-first parser and generator for pipe/comma/tab-delimited flat files with type coercion and validation",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -13,7 +13,9 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -22,7 +24,17 @@
     "lint": "tsc --noEmit",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["flat-file", "pipe-delimited", "csv", "tsv", "parser", "schema", "enterprise", "etl", "b2b"],
+  "keywords": [
+    "flat-file",
+    "pipe-delimited",
+    "csv",
+    "tsv",
+    "parser",
+    "schema",
+    "enterprise",
+    "etl",
+    "b2b"
+  ],
   "author": "faizkhairi <ifaizkhairi@gmail.com>",
   "license": "MIT",
   "repository": {

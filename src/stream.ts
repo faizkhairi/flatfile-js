@@ -43,7 +43,7 @@ export async function* parseStream(
         break
       }
 
-      buffer += decoder.decode(value, { stream: true })
+      buffer += typeof value === 'string' ? value : decoder.decode(value, { stream: true })
 
       // Split on line endings, keep last incomplete chunk in buffer
       const parts = buffer.split(/\r?\n/)
