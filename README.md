@@ -1,4 +1,4 @@
-# flatfile-js
+# @faizkhairi/flatfile-js
 
 Schema-first parser and generator for pipe, comma, and tab-delimited flat files — with type coercion, validation, and streaming support.
 
@@ -7,15 +7,15 @@ Schema-first parser and generator for pipe, comma, and tab-delimited flat files 
 
 ---
 
-## Why flatfile-js?
+## Why @faizkhairi/flatfile-js?
 
-Enterprise data exchange often uses pipe-delimited flat files (SAP IDocs, bank statements, government B2B integrations). Parsing them correctly means:
+Enterprise data exchange often uses pipe-delimited flat files (bank statements, government B2B integrations). Parsing them correctly means:
 
 - Trimming whitespace and coercing types
 - Collecting errors per-field without aborting the whole file
 - Streaming multi-GB files without loading them into memory
 
-`flatfile-js` handles all of this with a single schema definition.
+`@faizkhairi/flatfile-js` handles all of this with a single schema definition.
 
 ---
 

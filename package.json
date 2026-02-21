@@ -1,6 +1,6 @@
 {
   "name": "@faizkhairi/flatfile-js",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Schema-first parser and generator for pipe/comma/tab-delimited flat files with type coercion and validation",
   "type": "module",
   "main": "./dist/index.cjs",
