@@ -15,16 +15,46 @@ export function stringifyFlat(
   const lines: string[] = []
 
   if (schema.hasHeader) {
-    const header = schema.fields.map((f) => f.name).join(schema.delimiter)
+    const header = schema.fields
+      .map((f) => applyQuoting(f.name, schema))
+      .join(schema.delimiter)
     lines.push(header)
   }
 
   for (const record of records) {
-    const parts = schema.fields.map((field) => serializeValue(record[field.name], field))
+    const parts = schema.fields.map((field) =>
+      applyQuoting(serializeValue(record[field.name], field), schema)
+    )
     lines.push(parts.join(schema.delimiter))
   }
 
   return lines.join(lineEnd)
+}
+
+/**
+ * Quote a field per RFC 4180 (embedded `"` doubled) when it contains the
+ * delimiter, a `"`, or a CR/LF, or unconditionally/never per `schema.quote`.
+ */
+function applyQuoting(value: string, schema: FlatFileSchema): string {
+  const mode = schema.quote ?? 'auto'
+
+  if (mode === 'never') return value
+  if (mode === 'always') return quoteField(value)
+
+  return needsQuoting(value, schema.delimiter) ? quoteField(value) : value
+}
+
+function needsQuoting(value: string, delimiter: string): boolean {
+  return (
+    value.includes(delimiter) ||
+    value.includes('"') ||
+    value.includes('\n') ||
+    value.includes('\r')
+  )
+}
+
+function quoteField(value: string): string {
+  return `"${value.replace(/"/g, '""')}"`
 }
 
 function serializeValue(value: unknown, field: SchemaField): string {

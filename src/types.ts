@@ -1,5 +1,6 @@
 export type FieldType = 'string' | 'number' | 'decimal' | 'date' | 'boolean'
 export type LineEnding = 'LF' | 'CRLF' | 'auto'
+export type QuoteMode = 'auto' | 'always' | 'never'
 
 export interface SchemaField {
   /** Field name used as the key in parsed records */
@@ -33,6 +34,13 @@ export interface FlatFileSchema {
   hasHeader?: boolean
   /** Line ending style. Default: 'auto' (handles both LF and CRLF) */
   lineEnding?: LineEnding
+  /**
+   * RFC 4180 quoting strategy used by `stringifyFlat`.
+   * - 'auto': quote a field only if it contains the delimiter, a `"`, or a CR/LF (default)
+   * - 'always': quote every field
+   * - 'never': never quote (delimiters/quotes/newlines in values will corrupt the output)
+   */
+  quote?: QuoteMode
 }
 
 export interface ParseError {

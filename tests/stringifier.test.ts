@@ -134,4 +134,57 @@ describe('stringifyFlat', () => {
       expect(output).toBe(content)
     })
   })
+
+  describe('RFC 4180 quoting', () => {
+    const csvSchema = createSchema({
+      delimiter: ',',
+      fields: [
+        { name: 'name', type: 'string', position: 0 },
+        { name: 'note', type: 'string', position: 1 },
+      ],
+    })
+
+    it('quotes a field containing the delimiter (auto mode, default)', () => {
+      const records = [{ name: 'Smith, John', note: 'ok' }]
+      expect(stringifyFlat(records, csvSchema)).toBe('"Smith, John",ok')
+    })
+
+    it('escapes embedded quotes by doubling them', () => {
+      const records = [{ name: 'She said "hello"', note: 'x' }]
+      expect(stringifyFlat(records, csvSchema)).toBe('"She said ""hello""",x')
+    })
+
+    it('quotes a field containing an embedded newline', () => {
+      const records = [{ name: 'line one\nline two', note: 'x' }]
+      expect(stringifyFlat(records, csvSchema)).toBe('"line one\nline two",x')
+    })
+
+    it('leaves plain fields unquoted in auto mode', () => {
+      const records = [{ name: 'Alice', note: 'ok' }]
+      expect(stringifyFlat(records, csvSchema)).toBe('Alice,ok')
+    })
+
+    it('quotes every field when quote is "always"', () => {
+      const s = createSchema({ ...csvSchema, quote: 'always' })
+      const records = [{ name: 'Alice', note: 'ok' }]
+      expect(stringifyFlat(records, s)).toBe('"Alice","ok"')
+    })
+
+    it('never quotes when quote is "never", even with a delimiter present', () => {
+      const s = createSchema({ ...csvSchema, quote: 'never' })
+      const records = [{ name: 'Smith, John', note: 'ok' }]
+      expect(stringifyFlat(records, s)).toBe('Smith, John,ok')
+    })
+
+    describe('round-trip with special characters (stringifyFlat → parseFlat)', () => {
+      it('reproduces a value containing the delimiter, a quote, and a newline', () => {
+        const records = [{ name: 'Smith, "Johnny"\nJr.', note: 'ok' }]
+        const output = stringifyFlat(records, csvSchema)
+        const { records: parsed, errors } = parseFlat(output, csvSchema)
+        expect(errors).toHaveLength(0)
+        expect(parsed[0].name).toBe('Smith, "Johnny"\nJr.')
+        expect(parsed[0].note).toBe('ok')
+      })
+    })
+  })
 })

@@ -74,6 +74,14 @@ describe('createSchema', () => {
     expect(schema.hasHeader).toBe(false)
   })
 
+  it('applies default quote: "auto"', () => {
+    const schema = createSchema({
+      delimiter: ',',
+      fields: [{ name: 'x', type: 'string', position: 0 }],
+    })
+    expect(schema.quote).toBe('auto')
+  })
+
   it('preserves user-provided lineEnding and hasHeader', () => {
     const schema = createSchema({
       delimiter: ',',

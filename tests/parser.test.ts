@@ -183,4 +183,48 @@ describe('parseFlat', () => {
       expect(errors).toHaveLength(0)
     })
   })
+
+  describe('RFC 4180 quoting', () => {
+    const csvSchema = createSchema({
+      delimiter: ',',
+      fields: [
+        { name: 'name', type: 'string', position: 0 },
+        { name: 'note', type: 'string', position: 1 },
+      ],
+    })
+
+    it('handles a delimiter inside a quoted field', () => {
+      const content = '"Smith, John",Engineer'
+      const { records, errors } = parseFlat(content, csvSchema)
+      expect(errors).toHaveLength(0)
+      expect(records[0].name).toBe('Smith, John')
+      expect(records[0].note).toBe('Engineer')
+    })
+
+    it('unescapes doubled quotes inside a quoted field', () => {
+      const content = '"She said ""hello""",note'
+      const { records } = parseFlat(content, csvSchema)
+      expect(records[0].name).toBe('She said "hello"')
+    })
+
+    it('preserves an embedded newline inside a quoted field', () => {
+      const content = '"line one\nline two",note'
+      const { records } = parseFlat(content, csvSchema)
+      expect(records[0].name).toBe('line one\nline two')
+      expect(records[0].note).toBe('note')
+    })
+
+    it('parses a second record correctly after a quoted field with an embedded newline', () => {
+      const content = '"line one\nline two",note\nplain,value'
+      const { records } = parseFlat(content, csvSchema)
+      expect(records).toHaveLength(2)
+      expect(records[1].name).toBe('plain')
+      expect(records[1].note).toBe('value')
+    })
+
+    it('leaves an unquoted field with no special characters unaffected', () => {
+      const { records } = parseFlat('Alice,ok', csvSchema)
+      expect(records[0].name).toBe('Alice')
+    })
+  })
 })

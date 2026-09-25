@@ -116,4 +116,61 @@ describe('parseStream', () => {
     expect(records).toHaveLength(100)
     expect(records[99].id).toBe(100)
   })
+
+  describe('RFC 4180 quoting', () => {
+    const csvSchema = createSchema({
+      delimiter: ',',
+      fields: [
+        { name: 'name', type: 'string', position: 0 },
+        { name: 'note', type: 'string', position: 1 },
+      ],
+    })
+
+    it('handles a quoted field with a delimiter split across multiple chunks', async () => {
+      const encoder = new TextEncoder()
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(encoder.encode('"Smith, '))
+          controller.enqueue(encoder.encode('John",Engineer\n'))
+          controller.close()
+        },
+      })
+
+      const records = await collect(parseStream(stream, csvSchema))
+      expect(records).toHaveLength(1)
+      expect(records[0].name).toBe('Smith, John')
+      expect(records[0].note).toBe('Engineer')
+    })
+
+    it('handles a quoted field with an embedded newline split across chunks', async () => {
+      const encoder = new TextEncoder()
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(encoder.encode('"line one\n'))
+          controller.enqueue(encoder.encode('line two",note\n'))
+          controller.close()
+        },
+      })
+
+      const records = await collect(parseStream(stream, csvSchema))
+      expect(records).toHaveLength(1)
+      expect(records[0].name).toBe('line one\nline two')
+      expect(records[0].note).toBe('note')
+    })
+
+    it('unescapes a doubled quote split across chunks', async () => {
+      const encoder = new TextEncoder()
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(encoder.encode('"She said ""'))
+          controller.enqueue(encoder.encode('hello""",note\n'))
+          controller.close()
+        },
+      })
+
+      const records = await collect(parseStream(stream, csvSchema))
+      expect(records).toHaveLength(1)
+      expect(records[0].name).toBe('She said "hello"')
+    })
+  })
 })

@@ -110,6 +110,7 @@ const schema = createSchema({
   fields: [...],        // Required. At least one field.
   hasHeader?: false,    // Default: false. If true, first line is skipped on parse.
   lineEnding?: 'auto',  // 'LF' | 'CRLF' | 'auto'. Default: 'auto'.
+  quote?: 'auto',       // 'auto' | 'always' | 'never'. Default: 'auto'. Controls stringifyFlat quoting.
 })
 ```
 
@@ -124,6 +125,9 @@ Parses a flat file string into typed records. Returns `{ records, errors }`.
 - Records with field errors are **still included** — failed fields are set to `null`.
 - Empty optional fields → `null` (no error).
 - Empty required fields → error collected, field set to `null`.
+- **Quoted fields (RFC 4180):** a field wrapped in `"..."` may contain the delimiter,
+  an escaped `""` quote, or an embedded CR/LF. This also applies to `parseStream`,
+  where quoting state is kept across chunk boundaries.
 
 ```typescript
 const { records, errors } = parseFlat(content, schema)
@@ -157,6 +161,9 @@ fs.writeFileSync('output.dat', output)
 - `number` → `Math.round()` (integer)
 - `decimal` → `.toFixed(decimalPlaces)`
 - `date` → formatted per `field.format` (default: ISO 8601)
+- A field containing the delimiter, a `"`, or a CR/LF is quoted per RFC 4180
+  (embedded `"` doubled) unless `schema.quote` is `'never'`; pass `'always'` to
+  quote every field regardless of content.
 - `boolean` → `trueValue ?? '1'` or `falseValue ?? '0'`
 
 ---

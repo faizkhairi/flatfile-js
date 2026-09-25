@@ -36,6 +36,7 @@ export function createSchema(config: FlatFileSchema): FlatFileSchema {
     ...config,
     lineEnding: config.lineEnding ?? 'auto',
     hasHeader: config.hasHeader ?? false,
+    quote: config.quote ?? 'auto',
     fields: [...config.fields].sort((a, b) => a.position - b.position),
   }
 }
